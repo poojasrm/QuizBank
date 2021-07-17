@@ -26,3 +26,4 @@ Auth::routes();
 
 Route::get('/user', [App\Http\Controllers\User\User::class, 'index'])->name('user');
 Route::get('/user/{id}', [App\Http\Controllers\User\User::class, 'show'])->name('show');
+Route::post('/user',[App\Http\Controllers\User\User::class, 'store'])->name('store');

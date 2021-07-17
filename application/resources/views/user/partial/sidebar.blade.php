@@ -94,6 +94,7 @@ function menuaction(pageurl,data){
 
 function ajaxcall(pageurl,data,type,responsediv){
     
+    
     $.ajax({
         type: type,
         url: pageurl,
