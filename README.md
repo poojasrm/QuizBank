@@ -1,2 +1,2 @@
 # QuizBank
-Online Quiz | Suryes | Feeback Application based on Laravel.
+Online Quiz | Suryes | Feedback Application based on Laravel.
