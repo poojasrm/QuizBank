@@ -17,6 +17,7 @@ class CreateQuestionsTable extends Migration
             $table->id();
             $table->double('marks', 15, 8)->nullable()->default(0.0);
             $table->mediumText('question')->nullable()->default('text');
+            $table->json('options');
             $table->string('op1', 100)->nullable()->default('text');
             $table->string('op2', 100)->nullable()->default('text');
             $table->string('op3', 100)->nullable()->default('text');
@@ -25,6 +26,8 @@ class CreateQuestionsTable extends Migration
             $table->timestamps();
         });
     }
+
+    
 
     /**
      * Reverse the migrations.

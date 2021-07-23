@@ -1,6 +1,6 @@
 <?php
 $rstr=Request::get('rstr','a'.Str::random(10));
-
+//dd($assessments);
 ?>
 <div class="wrapper">
 
@@ -35,6 +35,7 @@ $rstr=Request::get('rstr','a'.Str::random(10));
                     <a href=""><i class="ti-more-alt"></i></a>
                     <div class="dropdown-menu dropdown-menu-right" >
                         <button class="dropdown-item" type="button" onclick=""><i class='ti ti-pencil text-primary'></i> Edit</button>
+                        <button class="dropdown-item" type="button" onclick="_assignquiz.showlink('{{$assessment->id}}')"><i class='ti ti-share text-primary'></i> Share Link</button>
                         <button class="dropdown-item" type="button" onclick=""><i class='ti ti-file text-primary'></i> Report</button>
                         <button class="dropdown-item" type="button" onclick=""><i class='ti ti-trash text-danger'></i> Delete</button>
                     </div>
@@ -55,10 +56,10 @@ $rstr=Request::get('rstr','a'.Str::random(10));
           <p class="card-subtitle text-muted" style="font-size: 12px;"><i class="fa fa-calendar"></i> Date : {{$assessment->scheduledate}}</p>
           <div class="row">
             <div class="col-6">
-               <button class=" mt-4 btn-sm btn btn-primary btn-block" onclick="_assignquiz.editAssessment('{{$assessment->id}}','{{$assessment->name}}','{{$assessment->description}}','{{$assessment->accesstype}}','{{$assessment->duration}}','{{$assessment->scheduledate}}','{{$rstr}}')"><i class="ti ti-pencil mr-2"></i>Edit</button>
+               <button class=" mt-4 btn-sm btn btn-primary btn-block" onclick="_assignquiz.editAssessment('{{$assessment->id}}','{{$assessment->name}}','{{$assessment->description}}','{{$assessment->accestype}}','{{$assessment->duration}}','{{$assessment->scheduledate}}','{{$assessment->quizzes_id}}','{{$rstr}}')"><i class="ti ti-pencil mr-2"></i>Edit</button>
             </div>
             <div class="col-6">
-               <button class=" mt-4 btn-sm btn btn-success btn-block"><i class="ti ti-receipt mr-2"></i>Report</button>
+               <button class=" mt-4 btn-sm btn btn-success btn-block" onclick="_assignquiz.showReport('{{$assessment->id}}')"><i class="ti ti-receipt mr-2"></i>Report</button>
             </div>                      
          </div>  
 
@@ -76,7 +77,7 @@ $rstr=Request::get('rstr','a'.Str::random(10));
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><i class="fa fa-cog mr-2"></i>Assign Quiz <span class="badge badge-primary" id="assign_assessment_id">New<span></h5>
+        <h5 class="modal-title"><i class="fa fa-cog mr-2"></i>Assign Quiz <span class="badge badge-primary" id="{{$rstr}}-assign_assessment_id">New<span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
@@ -85,7 +86,7 @@ $rstr=Request::get('rstr','a'.Str::random(10));
        
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Select Quiz</label>
-            <select type="text" class="form-control" onchange="_assignquiz.changeQuizEvent('{{$rstr}}',$(this).val())" id="{{$rstr}}-changeQuizEvent">
+            <select type="text" class="form-control" id="{{$rstr}}-assign_quizid" onchange="_assignquiz.changeQuizEvent('{{$rstr}}',$(this).val())" id="{{$rstr}}-changeQuizEvent">
               <option>None</option>
               @foreach($quizes as $quiz)
               <option value="{{$quiz->id}}" >{{$quiz->name}}</option>
@@ -114,7 +115,7 @@ $rstr=Request::get('rstr','a'.Str::random(10));
             <div class="form-group col-md-6">
               <label for="recipient-name" class="col-form-label">Quiz Access</label>
               <select type="text" class="form-control" id="{{$rstr}}-assign_quizaccess">
-                <option value="1">Private</option>
+                <option value="1" >Private</option>
                 <option value="2">Public</option>              
               </select>
             </div>
@@ -140,6 +141,49 @@ $rstr=Request::get('rstr','a'.Str::random(10));
 </div>
 
 
+<div class="modal fade" id="shareModel" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title m-0" id="exampleModalCenterTitle">Share Quiz</h6>
+                <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="la la-times"></i></span>
+                </button>
+            </div><!--end modal-header-->
+            <div class="modal-body">                
+                <center>
+                <div class="container row">
+                    <!-- <div class="col-8"> -->
+                        <textarea  id="text-link"  class="mb-1 form-control" readonly="" value=""></textarea>
+                    <!-- </div> -->
+                    <div class="col-12 text-center" >
+                        <button class="btn btn-soft-primary" onclick="$('#text-link').select();document.execCommand('copy');"><i class="far fa-copy"></i> Copy Link</button>
+                    </div>
+                </div>   
+                </center>                                 
+            </div><!--end modal-body-->            
+        </div><!--end modal-content-->
+    </div><!--end modal-dialog-->
+</div>
+
+<div class="modal fade" id="assessmentReportModal" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title m-0" id="exampleModalCenterTitle">Assessment Report</h6>
+                <button type="button" class="close " data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="la la-times"></i></span>
+                </button>
+            </div><!--end modal-header-->
+            <div class="modal-body" id="assessmentReportModal_body">                
+                                                
+            </div><!--end modal-body-->            
+        </div><!--end modal-content-->
+    </div><!--end modal-dialog-->
+</div>
+
+
+
 <script type="text/javascript">
   
 
@@ -154,17 +198,20 @@ _assignquiz.changeQuizEvent = function(rstr,quizid)
   $('#'+rstr+'-assign_quizdescription').val(selectedquiz[0].description);
 }
 
-_assignquiz.editAssessment = function(id,name,description,accesstype,duration,scheduldate,rstr)
+_assignquiz.editAssessment = function(id,name,description,accesstype,duration,scheduldate,quizid,rstr)
  {
     $('#'+rstr+'-assign_quizname').val(name);
     $('#'+rstr+'-assign_quizdescription').val(description);    
     // $('#'+rstr+'-assign_usergroupid').val('');
     $('#'+rstr+'-assign_quizaccess').val(accesstype);
+    
     $('#'+rstr+'-assign_quizduration').val(duration);
-    $('#'+rstr+'-assign_quizdatetime').val(scheduldate);
+    temp = scheduldate.split(' ');
+    $('#'+rstr+'-assign_quizdatetime').val(temp[0]+'T'+temp[1]);    
     $('#'+rstr+'-assign_assessment_id').text(id);
 
     $('#assignquiz_modal').modal('show');
+    $('#'+rstr+'-assign_quizid').val(quizid);
  } 
 
 
@@ -172,6 +219,7 @@ _assignquiz.editAssessment = function(id,name,description,accesstype,duration,sc
  {
     $('#'+rstr+'-assign_assessment_id').text('New');
     $('#'+rstr+'-assign_quizname').val('');
+    $('#'+rstr+'-assign_quizid').val('');
     $('#'+rstr+'-assign_quizdescription').val('');    
     $('#'+rstr+'-assign_usergroupid').val('');
     $('#'+rstr+'-assign_quizaccess').val('');
@@ -188,7 +236,7 @@ _assignquiz.editAssessment = function(id,name,description,accesstype,duration,sc
     data['assessment_id']   = $('#'+rstr+'-assign_assessment_id').text();
     data['quizname']        = $('#'+rstr+'-assign_quizname').val();
     data['quizdescription'] = $('#'+rstr+'-assign_quizdescription').val();
-    // data['quizid']          = $('#'+rstr+'-assign_quizid').val();
+    data['quizid']          = $('#'+rstr+'-assign_quizid').val();
     data['quizduration']    = $('#'+rstr+'-assign_quizduration').val();
     data['quizdatetime']    = $('#'+rstr+'-assign_quizdatetime').val();
     // data['usergroupid']     = $('#'+rstr+'-assign_usergroupid').val();
@@ -196,7 +244,37 @@ _assignquiz.editAssessment = function(id,name,description,accesstype,duration,sc
     
 
     //TODO Action
-    ajaxcall('user',data,'POST');
+    ajaxcall('user',data,'POST','fakediv',function(res){
+        if(res['status'] == 'ok')
+        {
+          notify('success',res['msg']);
+          $('#assignquiz_modal').modal('hide');
+          $('#assignquiz_modal').on('hidden.bs.modal',function(e){
+                menuaction('assignquiz');          
+          });          
+        }
+        else
+        {
+          notify('error',res['msg']);
+        }
+
+    });
+}
+
+_assignquiz.showlink = function(id)
+{
+  var link = '{{url('/')}}/quiz/'+id;
+  var msg = "Join the link to participate in quiz : ";    
+  $('#text-link').val(msg+' '+link);    
+  $('#shareModel').modal('show');
+}
+
+_assignquiz.showReport = function(id)
+{
+  ajaxcall('user/showassessmentreport?assessment_id='+id,'','GET','assessmentReportModal_body',function(res){
+
+    $('#assessmentReportModal').modal('show');
+  });
 }
 
 </script>

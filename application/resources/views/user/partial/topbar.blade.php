@@ -290,7 +290,7 @@ $user=Auth::user();
                            <img src="{{$baseurl}}/avesta/images/users-face/women_avatar1.jpg" class="img-fluid wd-35 ht-35 rounded-circle" alt="">
                         </div>
                         <div class="profile-text">
-                           <h6>Pooja Sharma</h6>
+                           <h6>{{Auth::user()->name}}</h6>
                            <span>{{Auth::user()->email}}</span>
                         </div>
                      </div>

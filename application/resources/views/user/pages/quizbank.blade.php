@@ -44,7 +44,7 @@ $rstr=Request::get('rstr','a'.Str::random(10));
                 <p class="card-subtitle  text-muted"><i class="fa fa-calendar"></i> Date :{{date('d M Y',strtotime($quiz->created_at))}} </p>
                 <div class="row">
                     <div class="col-6">
-                       <button class=" mt-4 btn-sm btn btn-primary btn-block" onclick="menuaction('quizquestion')"><i class="ti ti-eye  mr-2"></i>View Quiz</button>
+                       <button class=" mt-4 btn-sm btn btn-primary btn-block" onclick="menuaction('quizquestion?quiz_id={{$quiz->id}}')"><i class="ti ti-eye  mr-2"></i>View Quiz</button>
                     </div>
                     <div class="col-6">
                        <button class=" mt-4 btn-sm btn btn-success btn-block"><i class="ti ti-receipt mr-2"></i>Assign</button>
@@ -117,7 +117,21 @@ _quizbank.saveQuiz = function(rstr)
     data['quizdescription'] = $('#'+rstr+'-config_quizdescription').val();
     data['quizid']          = $('#'+rstr+'-config_quizid').text();
     //TODO Action
-    ajaxcall('user',data,'POST');
+    ajaxcall('user',data,'POST','FakeDiv',function(res){
+
+      if(res['status'] == 'ok')
+      {
+        notify('success',res['msg']);
+        $('#quizconfig_modal').modal('hide');
+        $('#quizconfig_modal').on('hidden.bs.modal',function(e){
+                menuaction('quizes');          
+        });
+
+
+      }
+      else notify('error',res['msg']);
+
+   });
 }
 
 </script>

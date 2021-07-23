@@ -22,6 +22,10 @@ Route::get('explore', function () {
     return view('explore');
 });
 
+Route::get('/quiz/{id}',[App\Http\Controllers\TakeQuiz::class, 'show'])->name('quiz');
+Route::post('/quiz',[App\Http\Controllers\TakeQuiz::class, 'store'])->name('quizstore');
+
+
 Auth::routes();
 
 Route::get('/user', [App\Http\Controllers\User\User::class, 'index'])->name('user');

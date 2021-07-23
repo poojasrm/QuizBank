@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Models\quiz;
-use App\Models\question;
-use App\Models\assessment;
+use App\Models\Quiz;
+use App\Models\Question;
+use App\Models\Assessment;
+use App\Models\AssessmentGuestUser;
 
 
 use Request;
 use App\Http\Controllers\Controller;
 use Response;
+use Auth;
 
 class User extends Controller
 {
@@ -41,6 +43,12 @@ class User extends Controller
         if($page == 'questions')    return $this->showQuestions();
         if($page == 'assignquiz')   return $this->showAssingQuiz();
         if($page == 'help')         return $this->showHelp();
+        if($page == 'showattachquestion') return $this->showAttachQuestion();
+        if($page == 'showassessmentreport') return $this->showAssessmentReport();
+
+
+        //detroy
+        if($page == 'removequizquestion') return $this->removeQuizQuestion();        
 
 
         return Response($page);
@@ -52,10 +60,43 @@ class User extends Controller
 
         if($action == 'savequiz') return $this->saveQuiz();
         if($action == 'savequestion') return $this->saveQuestion();
+        if($action == 'savequestionwithquiz') return $this->saveQuestionWithQuiz();
         if($action == 'saveassessment') return $this->saveAssessment();
+        if($action == 'attachQuizQuestion') return $this->attachQuizQuestion();
 
     }
 
+
+    private function removeQuizQuestion()
+    {
+        $quiz_id = Request::get('quiz_id');
+        $question_id = Request::get('question_id');
+
+        Quiz::find($quiz_id)->questions()->detach($question_id);
+
+        return Response::json(['status'=>'ok','msg'=>"Quiz Updated"]);
+    }
+
+    private function attachQuizQuestion()
+    {
+        $quiz_id = Request::get('quiz_id');
+        $selected_question_ids = json_decode(Request::get('selected_questionids'));
+
+        
+        Quiz::find($quiz_id)->questions()->attach($selected_question_ids);
+
+        return Response::json(['status'=>'ok','msg'=>'Attached']);
+
+    }
+    private function showAttachQuestion()
+    {
+        $quiz_id = Request::get('quiz_id');
+
+        $attached_questionids =  Quiz::find($quiz_id)->questions->pluck('id')->toArray();
+        $questions = Question::whereNotIn('id',$attached_questionids)->get();
+
+        return view('user.pages.attachquestion',['questions'=>$questions]);
+    }
 
     private function saveQuiz()
     {
@@ -71,40 +112,64 @@ class User extends Controller
         $quiz->description = $quizdescription;
         $quiz->save();
         
-        return Response::json(['status'=>'ok','msg'=>'Created']);
+        $msg = 'Created Successfully';
+        if(strtolower($quizid) != 'new' ) $msg = "Updated Successfully";
+        return Response::json(['status'=>'ok','msg'=>$msg]);
     }
 
     private function saveQuestion()
     {
         $questionid    = Request::get('questionid','new');
         $question_text = Request::get('question');
-        $marks    = Request::get('marks');
-        $op1      = Request::get('op1');
-        $op2      = Request::get('op2');
-        $op3      = Request::get('op3');
-        $op4      = Request::get('op4');
+        $marks         = Request::get('marks');
+        $options       = json_decode(Request::get('options'));
+        
         
         
         $QUESTION = new question;
 
         $question = $QUESTION->findOrNew($questionid);
         $question->question = $question_text; 
-        $question->marks    = $marks; 
-        $question->op1      = $op1;
-        $question->op2      = $op2;
-        $question->op3      = $op3; 
-        $question->op4      = $op4; 
+        $question->marks    = $marks;         
+        $question->options  = $options;
         
         $question->save();
 
 
-        return Response::json(['status'=>'ok','msg'=>'Created']);
+        $msg = 'Created Successfully';
+        if(strtolower($questionid) != 'new' ) $msg = "Updated Successfully";
+        return Response::json(['status'=>'ok','msg'=>$msg]);
+    }
+
+    private function saveQuestionWithQuiz()
+    {
+        $questionid    = Request::get('questionid','new');
+        $quiz_id       = Request::get('quiz_id');
+        $question_text = Request::get('question');
+        $marks         = Request::get('marks');
+        $options       = json_decode(Request::get('options'));
+        
+        
+        
+        $QUESTION = new question;
+
+        $question = $QUESTION->findOrNew($questionid);
+        $question->question = $question_text; 
+        $question->marks    = $marks;         
+        $question->options  = $options;
+        
+        $question->save();
+
+        Quiz::find($quiz_id)->questions()->attach($question->id);
+        
+        return Response::json(['status'=>'ok','msg'=>'Added Successfully']);
     }
 
     private function saveAssessment()
     {
         $assessment_id     = Request::get('assessment_id','new');
         $quizname          = Request::get('quizname');
+        $quizid            = Request::get('quizid');
         $quizdescription   = Request::get('quizdescription');        
         $quizduration      = Request::get('quizduration');
         $quizdatetime      = Request::get('quizdatetime');
@@ -115,12 +180,16 @@ class User extends Controller
         $assessment = $ASSESSMENT->findOrNew($assessment_id);        
         $assessment->name         = $quizname;
         $assessment->description  = $quizdescription;
+        $assessment->quizzes_id   = $quizid;
+        $assessment->user_id      = Auth::user()->id;
         $assessment->duration     = $quizduration;
         $assessment->scheduledate = $quizdatetime;
         $assessment->accestype    = $quizaccesstype;
         $assessment->save();
         
-        return Response::json(['status'=>'ok','msg'=>'Created']);
+        $msg = 'Created Successfully';
+        if(strtolower($assessment_id) != 'new' ) $msg = "Updated Successfully";
+        return Response::json(['status'=>'ok','msg'=>$msg]);
     }
 
     private function showDashboard()
@@ -128,6 +197,14 @@ class User extends Controller
         return view('user.pages.dashboard');
     }
 
+    private function showAssessmentReport()
+    {
+        $assessment_id = Request::get('assessment_id');
+
+        $assessmentguestusers = AssessmentGuestUser::where('assessment_id',$assessment_id)->get();
+
+        return view('user.pages.assessmentusers',['assessmentguestusers'=>$assessmentguestusers]);
+    }
     private function showQuizes()
     {
         
@@ -137,7 +214,10 @@ class User extends Controller
 
     private function showQuizQuestion()
     {
-        return view('user.pages.quizquestion');
+        $quiz_id = Request::get('quiz_id');
+        $quiz = Quiz::find($quiz_id);
+
+        return view('user.pages.quizquestion',['quiz'=>$quiz]);
     }
 
     private function showAssingQuiz()
@@ -150,6 +230,7 @@ class User extends Controller
     private function showQuestions()
     {
         $questions = question::all();
+        //$questions = question::latest()->first();
         return view('user.pages.questionbank',['questions'=>$questions]);
     }
 

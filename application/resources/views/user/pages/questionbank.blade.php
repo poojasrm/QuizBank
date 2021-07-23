@@ -1,5 +1,7 @@
 <?php
 $rstr=Request::get('rstr','a'.Str::random(10));
+
+//dd($questions);
 ?>
 <div class="wrapper">
 
@@ -22,7 +24,7 @@ $rstr=Request::get('rstr','a'.Str::random(10));
 
 
 <div class="row">
-   <div class="col-md-12">
+   <div class="col-md-12 pb-5 mb-5">
       <div class="card">
       <table class="table">
          <thead class="thead-light">
@@ -34,7 +36,7 @@ $rstr=Request::get('rstr','a'.Str::random(10));
             </tr>
          </thead>
          <tbody>
-            @foreach($questions as $question)
+            @foreach($questions as $question)            
             <tr>
                <th scope="row">{{$question->id}}</th>
                <td>{{$question->question}}</td>
@@ -42,9 +44,9 @@ $rstr=Request::get('rstr','a'.Str::random(10));
                <td class="text-center">
                   <div class="dropdown" data-toggle="dropdown" aria-expanded="false">
                     <a href=""><i class="ti-more-alt"></i></a>
-                    <div class="dropdown-menu dropdown-menu-right" >
+                    <div class="dropdown-menu dropdown-menu-right" style="z-index: 999;" >
                         <button class="dropdown-item" type="button" onclick=""><i class='ti ti-settings text-primary'></i> view</button>
-                        <button class="dropdown-item" type="button" onclick="_questionbank.editQuestion('{{$question->id}}','{{$question->question}}','{{$question->op1}}','{{$question->op2}}','{{$question->op3}}','{{$question->op4}}','{{$question->marks}}','{{$rstr}}')"><i class='ti ti-pencil text-primary'></i> edit</button>
+                        <button class="dropdown-item" type="button" onclick="_questionbank.editQuestion('{{$question->id}}','{{$question->question}}','{{$question->marks}}','{{json_encode($question->options)}}','{{$rstr}}')"><i class='ti ti-pencil text-primary'></i> edit</button>
                         <button class="dropdown-item" type="button" onclick=""><i class='ti ti-trash text-danger'></i> Delete</button>
                     </div>
                  </div>
@@ -74,23 +76,35 @@ $rstr=Request::get('rstr','a'.Str::random(10));
        
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Question</label>
-            <textarea class="form-control" id="{{$rstr}}-config_question"></textarea>
+            <textarea class="form-control" id="{{$rstr}}-config_question"></textarea>            
           </div>
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Option 1</label>
-            <textarea class="form-control" id="{{$rstr}}-configquestion_op1"></textarea>
+             <div class="form-row">
+              <input class="form-control col-1" id="{{$rstr}}-configquestion_op1_correct" style="height: 20px !important;margin-top:11px !important;" type="checkbox" />
+              <textarea class="form-control col-11" id="{{$rstr}}-configquestion_op1"></textarea>
+            </div>
           </div>
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Option 2</label>
-            <textarea class="form-control" id="{{$rstr}}-configquestion_op2"></textarea>
+             <div class="form-row">
+              <input class="form-control col-1" id="{{$rstr}}-configquestion_op2_correct" style="height: 20px !important;margin-top:11px !important;" type="checkbox" />
+              <textarea class="form-control col-11" id="{{$rstr}}-configquestion_op2"></textarea>
+             </div>
           </div>
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Option 3</label>
-            <textarea class="form-control" id="{{$rstr}}-configquestion_op3"></textarea>
+            <div class="form-row">
+              <input class="form-control col-1" id="{{$rstr}}-configquestion_op3_correct" style="height: 20px !important;margin-top:11px !important;" type="checkbox" />
+              <textarea class="form-control col-11" id="{{$rstr}}-configquestion_op3"></textarea>
+            </div>
           </div>
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Option 4</label>
-            <textarea class="form-control" id="{{$rstr}}-configquestion_op4"></textarea>
+            <div class="form-row">
+              <input class="form-control col-1" id="{{$rstr}}-configquestion_op4_correct" style="height: 20px !important;margin-top:11px !important;"  type="checkbox" />
+              <textarea class="form-control col-11" id="{{$rstr}}-configquestion_op4"></textarea>
+            </div>
           </div>
           <div class="form-group">
             <label for="message-text" class="col-form-label">Marks</label>
@@ -112,32 +126,38 @@ $rstr=Request::get('rstr','a'.Str::random(10));
 _questionbank = {};
 
 _questionbank.showQuestionCreateForm = function(rstr)
- {  
-   data['questionid'] = $('#'+rstr+'-config_questionid').val('new');
-   data['question'] = $('#'+rstr+'-config_question').val('');
-   data['marks']    = $('#'+rstr+'-configquestion_marks').val('');
-   data['op1']      = $('#'+rstr+'-configquestion_op1').val('');   
-   data['op2']      = $('#'+rstr+'-configquestion_op2').val('');
-   data['op3']      = $('#'+rstr+'-configquestion_op3').val('');
-   data['op4']      = $('#'+rstr+'-configquestion_op4').val('');
+ { 
+
+   $('#'+rstr+'-config_questionid').val('new');
+   $('#'+rstr+'-config_question').val('');
+   $('#'+rstr+'-configquestion_marks').val('');
+   $('#'+rstr+'-configquestion_op1').val('');   
+   $('#'+rstr+'-configquestion_op2').val('');
+   $('#'+rstr+'-configquestion_op3').val('');
+   $('#'+rstr+'-configquestion_op4').val('');
 
    $('#configquestion_modal').modal('show');
  }  
 
 
-_questionbank.editQuestion = function(questionid,question,op1,op2,op3,op4,marks,rstr)
+_questionbank.editQuestion = function(questionid,question,marks,options,rstr)
  {  
-   data['questionid'] = $('#'+rstr+'-config_questionid').val(questionid);
-   data['question'] = $('#'+rstr+'-config_question').val(question);
-   data['marks']    = $('#'+rstr+'-configquestion_marks').val(marks);
-   data['op1']      = $('#'+rstr+'-configquestion_op1').val(op1);   
-   data['op2']      = $('#'+rstr+'-configquestion_op2').val(op2);
-   data['op3']      = $('#'+rstr+'-configquestion_op3').val(op3);
-   data['op4']      = $('#'+rstr+'-configquestion_op4').val(op4);
+   $('#'+rstr+'-config_questionid').val(questionid);
+   $('#'+rstr+'-config_question').val(question);
+   $('#'+rstr+'-configquestion_marks').val(marks);
+   options = JSON.parse(options);
+
+   Object.values(options).forEach(function(data,i)
+   {
+      $('#'+rstr+'-configquestion_op'+(i+1)).val(data.value);  
+      $('#'+rstr+'-configquestion_op'+(i+1)+'_correct').prop('checked',data.correct);          
+   });
+   
 
    $('#configquestion_modal').modal('show');
  } 
 
+ 
  _questionbank.saveQuestion = function(rstr)
  {
    data = {};
@@ -146,13 +166,34 @@ _questionbank.editQuestion = function(questionid,question,op1,op2,op3,op4,marks,
    data['questionid'] = $('#'+rstr+'-config_questionid').val();
    data['question'] = $('#'+rstr+'-config_question').val();
    data['marks']    = $('#'+rstr+'-configquestion_marks').val();
-   data['op1']      = $('#'+rstr+'-configquestion_op1').val();   
-   data['op2']      = $('#'+rstr+'-configquestion_op2').val();
-   data['op3']      = $('#'+rstr+'-configquestion_op3').val();
-   data['op4']      = $('#'+rstr+'-configquestion_op4').val();
+   
+   var options = {};
+   options.op1 = {"correct":$('#'+rstr+'-configquestion_op1_correct').prop('checked') ,"value":$('#'+rstr+'-configquestion_op1').val()};  
+   options.op2 = {"correct":$('#'+rstr+'-configquestion_op2_correct').prop('checked') ,"value":$('#'+rstr+'-configquestion_op2').val()};  
+   options.op3 = {"correct":$('#'+rstr+'-configquestion_op3_correct').prop('checked') ,"value":$('#'+rstr+'-configquestion_op3').val()};  
+   options.op4 = {"correct":$('#'+rstr+'-configquestion_op4_correct').prop('checked') ,"value":$('#'+rstr+'-configquestion_op4').val()};  
 
+   data['options'] = JSON.stringify(options);
+  // console.log(data);
    //TODO Save Question
-   ajaxcall('user',data,'POST');
+   ajaxcall('user',data,'POST','FAKE_DIV',function(res){
+      
+      
+
+
+      if(res['status'] == 'ok')
+      {
+        notify('success',res['msg']);
+        $('#configquestion_modal').modal('hide');
+        $('#configquestion_modal').on('hidden.bs.modal',function(e){
+                menuaction('questions');          
+        });
+
+
+      }
+      else notify('error',res['msg']);
+
+   });
 
  }  
 

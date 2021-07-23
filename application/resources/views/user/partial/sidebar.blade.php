@@ -73,11 +73,8 @@ $baseurl=url('/');
        <i data-feather="mail" class="wd-16"></i></a>
        <a class="pull-left" href="aut-unlock.html" data-toggle="tooltip" data-placement="top" data-original-title="Lockscreen">
        <i data-feather="lock" class="wd-16"></i></a>
-       <a class="pull-left" href="logout" onclick="event.preventDefault();document.getElementById('logout-form').submit();" data-toggle="tooltip" data-placement="top" data-original-title="Sing Out">
-       <i data-feather="log-out" class="wd-16"></i></a>
-       <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                    @csrf
-                </form>
+       {{-- <a class="pull-left" href="logout" onclick="event.preventDefault();document.getElementById('logout-form').submit();" data-toggle="tooltip" data-placement="top" data-original-title="Sing Out">
+       <i data-feather="log-out" class="wd-16"></i></a> --}}       
     </div>
     <!--/ Sidebar Footer End -->
 </div>
@@ -92,65 +89,48 @@ function menuaction(pageurl,data){
     ajaxcall(url,data,'GET','appcontent');   
 }
 
-function ajaxcall(pageurl,data,type,responsediv){
+function ajaxcall(pageurl,data,type,responsediv,callback){
     
     
     $.ajax({
         type: type,
         url: pageurl,
         data: data,
-        success: function(res) {
-            $('#'+responsediv).html(res);
+        success: function(res) {              
+            $('#'+responsediv).html(res);            
+            callback(res);
         }
-    })    
+    });
+
+
+
 }
 
-function notify(title,msg)
+
+
+function notify(type,msg)
 {
 
-  var Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            width: 250,
-            timerProgressBar: true,
-            onOpen: function(toast) {
-              toast.addEventListener('mouseenter', Swal.stopTimer)
-              toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-          });
+      toastr.options = {
+          "closeButton": true,
+          "debug": false,
+          "newestOnTop": false,
+          "progressBar": true,
+          "positionClass": "toast-top-right",
+          "preventDuplicates": false,
+          "onclick": null,
+          "showDuration": "300",
+          "hideDuration": "1000",
+          "timeOut": "4000",
+          "extendedTimeOut": "1000",
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
+        }
 
-    if(title=='Success')
-    {
-      Toast.fire({
-        icon: 'success',
-        title: msg
-      })
-    }
-    if(title=='Error')
-    {
-      Toast.fire({
-        icon: 'error',
-        title: msg
-      })
-    }
-    if(title=='Notification')
-    {
-      Toast.fire({
-        icon: 'info',
-        title: msg
-      })
+        toastr[type](msg);
 
-    }
-    if(title=='Warning')
-    {
-      Toast.fire({
-        icon: 'warning',
-        title: msg
-      })
-
-    }
 }
 
 
