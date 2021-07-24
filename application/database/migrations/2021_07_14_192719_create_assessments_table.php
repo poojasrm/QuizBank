@@ -16,7 +16,7 @@ class CreateAssessmentsTable extends Migration
         Schema::create('assessments', function (Blueprint $table) {
             $table->id();
             $table->string('name');            
-            $table->mediumText('description')->nullable()->default('text');   
+            $table->mediumText('description')->nullable();   
             $table->bigInteger('quizzes_id');
             $table->bigInteger('user_id');
             $table->dateTime('scheduledate')->nullable()->default('1970-01-01 00:00:00');

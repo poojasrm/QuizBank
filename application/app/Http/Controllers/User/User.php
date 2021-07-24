@@ -108,6 +108,7 @@ class User extends Controller
         $QUIZ = new quiz;
 
         $quiz = $QUIZ->findOrNew($quizid);
+        $quiz->user_id  = Auth::user()->id;
         $quiz->name = $quizname;
         $quiz->description = $quizdescription;
         $quiz->save();
@@ -130,7 +131,8 @@ class User extends Controller
 
         $question = $QUESTION->findOrNew($questionid);
         $question->question = $question_text; 
-        $question->marks    = $marks;         
+        $question->marks    = $marks;  
+        $question->user_id  = Auth::user()->id;       
         $question->options  = $options;
         
         $question->save();
@@ -155,7 +157,8 @@ class User extends Controller
 
         $question = $QUESTION->findOrNew($questionid);
         $question->question = $question_text; 
-        $question->marks    = $marks;         
+        $question->marks    = $marks;     
+        $question->user_id  = Auth::user()->id;    
         $question->options  = $options;
         
         $question->save();
@@ -194,7 +197,28 @@ class User extends Controller
 
     private function showDashboard()
     {
-        return view('user.pages.dashboard');
+        $totalquiz = Quiz::where('user_id',Auth::user()->id)->count();
+        $totalquestion = Question::where('user_id',Auth::user()->id)->count();
+        $totalassessment = Assessment::where('user_id',Auth::user()->id)->count();
+
+        $totalusers = AssessmentGuestUser::whereHas('assessment',function($q){$q->where('user_id',Auth::user()->id);})->count();
+
+        $totalassessmentusers = Assessment::with('guestuser')->where('user_id',Auth::user()->id)->get();;
+
+        $userassessment_chart = ['usercount'=>[],'assessmentname'=>[]];
+        
+        foreach ($totalassessmentusers as $assessment) {
+            $userassessment_chart['usercount'][] = $assessment->guestuser->count();
+            $userassessment_chart['assessmentname'][] = $assessment->name;  
+        }
+
+        return view('user.pages.dashboard',[
+                                                'totalquiz'=>$totalquiz,
+                                                'totalquestion'=>$totalquestion,
+                                                'totalusers'=>$totalusers,
+                                                'totalassessment'=>$totalassessment,
+                                                'userassessment_chart'=>$userassessment_chart
+                                            ]);
     }
 
     private function showAssessmentReport()

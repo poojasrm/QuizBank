@@ -7,7 +7,7 @@
                <th style="">#</th>
                <th style="">UserName</th>
                <th style="">Email</th>
-               <th style="">Marks</th>
+               <th class="text-center">Marks</th>
             </tr>
          </thead>
          <tbody>
@@ -15,7 +15,7 @@
             <tr>
                <th scope="row">{{$assessmentguestuser->id}}</th>
                <td>{{$assessmentguestuser->guestuser->name}}</td>
-               <td class='text-center'>{{$assessmentguestuser->guestuser->email}}</td>
+               <td >{{$assessmentguestuser->guestuser->email}}</td>
                <td class="text-center">
                   {{$assessmentguestuser->marks}}
                </td>

@@ -5,15 +5,7 @@ $user=Auth::user();
 
 <!-- Page Header Start -->
 <!--================================-->
-<div class="page-header">
-   <div class="search-form">
-      <form action="#" method="GET">
-         <div class="input-group">
-            <input class="form-control search-input typeahead" name="search" placeholder="Type something..." type="text"/>
-            <span class="input-group-btn"><span id="close-search"><i data-feather="x" class="wd-16"></i></span></span>
-         </div>
-      </form>
-   </div>
+<div class="page-header">   
    <nav class="navbar navbar-default">
       <!--================================-->
       <!-- Brand and Logo Start -->
@@ -25,7 +17,7 @@ $user=Auth::user();
                <li class="list-inline-item"><a class="hidden-md hidden-lg" href="#" id="sidebar-toggle-button"><i data-feather="menu" class="wd-20"></i></a></li>
                <!-- PC Toggle and Logo -->
                <li class="list-inline-item"><a class=" hidden-xs hidden-sm" href="#" id="collapsed-sidebar-toggle-button"><i data-feather="menu" class="wd-20"></i></a></li>
-               <li class="list-inline-item mg-l-10"><a  href="#" id="search-button"><i data-feather="search" class="wd-20"></i></a></li>
+               
             </ul>
          </div>
       </div>
@@ -294,10 +286,10 @@ $user=Auth::user();
                            <span>{{Auth::user()->email}}</span>
                         </div>
                      </div>
-                     <a href="" class="dropdown-item"><i data-feather="user" class="wd-16 mr-2"></i> My profile</a>                     
+                     {{-- <a href="" class="dropdown-item"><i data-feather="user" class="wd-16 mr-2"></i> My profile</a>                     
                      <a href="" class="dropdown-item"><i data-feather="settings" class="wd-16 mr-2"></i> Settings</a>
                      <a href="" class="dropdown-item"><i data-feather="activity" class="wd-16 mr-2"></i> My Activity</a>                     
-                     <a href="" class="dropdown-item"><i data-feather="life-buoy" class="wd-16 mr-2"></i> Support</a>
+                     <a href="" class="dropdown-item"><i data-feather="life-buoy" class="wd-16 mr-2"></i> Support</a> --}}
                      <a href="#" onclick="event.preventDefault();document.getElementById('logout-form').submit();" class="dropdown-item"><i data-feather="power" class="wd-16 mr-2"></i> Sign-out</a>
                      <div class="navbar-item">
                                        

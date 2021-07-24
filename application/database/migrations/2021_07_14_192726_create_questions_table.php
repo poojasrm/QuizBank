@@ -15,13 +15,10 @@ class CreateQuestionsTable extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->double('marks', 15, 8)->nullable()->default(0.0);
-            $table->mediumText('question')->nullable()->default('text');
-            $table->json('options');
-            $table->string('op1', 100)->nullable()->default('text');
-            $table->string('op2', 100)->nullable()->default('text');
-            $table->string('op3', 100)->nullable()->default('text');
-            $table->string('op4', 100)->nullable()->default('text');
+            $table->bigInteger('user_id');
+            $table->double('marks', 15, 8)->nullable();
+            $table->mediumText('question')->nullable();
+            $table->longText('options');            
 
             $table->timestamps();
         });

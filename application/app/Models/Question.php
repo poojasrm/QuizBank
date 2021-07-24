@@ -13,6 +13,9 @@ class Question extends Model
         'options' => 'array'
     ];
 
-    
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 
 }

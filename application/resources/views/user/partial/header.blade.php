@@ -43,6 +43,7 @@ $baseurl=url('/');
         <link type="text/css" rel="stylesheet" href="{{$baseurl}}/avesta/plugins/themify-icons/themify-icons.css">
         <!-- Weather CSS -->     
         <link type="text/css" rel="stylesheet" href="{{$baseurl}}/avesta/plugins/weather-icons/css/weather-icons.min.css">
+        <link type="text/css" rel="stylesheet" href="{{$baseurl}}/avesta/plugins/apex-chart/apexcharts.css">
 
         <link rel="stylesheet" href="{{$baseurl}}/avesta/plugins/toastr/toastr.min.css">
 
