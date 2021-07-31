@@ -19,7 +19,7 @@ class CreateAssessmentGuestUsersTable extends Migration
             $table->bigInteger('guest_user_id');
             $table->dateTime('startdatetime')->nullable();
             $table->integer('marks')->nullable();
-            $table->json('useroption')->nullable();
+            $table->longText('useroption')->nullable();
             $table->integer('status')->unsigned()->nullable()->default(1);  //1=>nottaken 2=>submitted
             $table->timestamps();
         });
